@@ -19,11 +19,12 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import RegisterForm from "../components/Authen/Register";
+import useUserStore from "../store/userStore";
 
 export default function LoginPage() {
-  const { fetchProfile } = useAuth();
+  const setUser = useUserStore((state) => state.setUser);
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -42,7 +43,16 @@ export default function LoginPage() {
         form
       );
       localStorage.setItem("token", res.data.token);
-      await fetchProfile();
+
+      const profilesRes = await axios.get(
+        "http://localhost:3000/api/auth/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${res.data.token}`,
+          },
+        }
+      );
+      setUser(profilesRes.data.data);
       navigate("/project");
     } catch (err) {
       setError(err.response?.data?.message || "Login Failed");
