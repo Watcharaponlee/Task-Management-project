@@ -86,7 +86,7 @@ const RegisterForm = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ color: "#3f51b5" }}>สมัครสมาชิก</DialogTitle>
+      <DialogTitle sx={{ color: "#3f51b5" }}> สมัครสมาชิก</DialogTitle>
       <DialogContent sx={{ pb: 0 }}>
         <form onSubmit={handleSubmit}>
           <Typography
@@ -117,12 +117,14 @@ const RegisterForm = ({ open, onClose }) => {
                 WebkitTextFillColor: "black",
               },
             }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Person sx={{ color: "#7986cb", mr: 1 }} />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Person sx={{ color: "#7986cb", mr: 1 }} />
+                  </InputAdornment>
+                ),
+              },
             }}
           />
 

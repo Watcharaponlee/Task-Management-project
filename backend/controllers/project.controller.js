@@ -1,7 +1,7 @@
 const pool = require("../config/db");
 
 exports.createProject = async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, status } = req.body;
   const owner_id = req.user.userId; // สมมติว่าเอาจาก token
 
   if (!name) {
@@ -10,8 +10,8 @@ exports.createProject = async (req, res) => {
 
   try {
     const [result] = await pool.execute(
-      `INSERT INTO projects (name, description, owner_id, created_at) VALUES (?, ?, ?, NOW())`,
-      [name, description || "", owner_id]
+      `INSERT INTO projects (name, description, status, owner_id, created_at) VALUES (?, ?, ?, ?, NOW())`,
+      [name, description || "", status || "OnGoing", owner_id]
     );
 
     res.status(201).json({
@@ -20,6 +20,7 @@ exports.createProject = async (req, res) => {
         id: result.insertId,
         name,
         description,
+        status: status,
         owner_id,
       },
     });
@@ -31,7 +32,7 @@ exports.createProject = async (req, res) => {
 exports.getAllProjects = async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      "SELECT id, name, description, owner_id, created_at FROM projects"
+      "SELECT id, name, description, owner_id, status FROM projects"
     );
     res.json({ message: "ok", data: rows });
   } catch (err) {
@@ -43,7 +44,7 @@ exports.getProjectById = async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.execute(
-      "SELECT id, name, description, owner_id, created_at FROM projects WHERE id = ?",
+      "SELECT id, name, description, owner_id FROM projects WHERE id = ?",
       [id]
     );
 

@@ -67,7 +67,15 @@ export default function LoginPage() {
   };
 
   return (
-    <Container maxwidth="xs">
+    <Container
+      maxwidth="xs"
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
       <Paper
         elevation={2}
         sx={{

@@ -23,19 +23,15 @@ const MainLayout = () => {
         sx={{
           width: "100%",
           minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center", // แนวนอน
-          alignItems: "center", // แนวตั้ง
-          textAlign: "center", // ✅ ตรงนี้
-          pl: `${open ? 240 : 72}px`, // เผื่อ sidebar ไม่บัง content
+          pl: `${open ? 200 : 72}px`, // เผื่อ sidebar ไม่บัง content
           transition: "padding-left 0.3s ease",
+          pt: "64px",
         }}
       >
         <Box
           sx={{
             width: "100%",
-            maxWidth: 960,
-            px: 3,
+            p: 3,
           }}
         >
           <Outlet />
