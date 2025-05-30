@@ -27,6 +27,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios";
 import CreateProjectForm from "../components/CompProject/Create";
+import Swal from "sweetalert2";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -41,7 +42,7 @@ const getStatusColor = (status) => {
   }
 };
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, onDelete }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => {
@@ -49,6 +50,55 @@ const ProjectCard = ({ project }) => {
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleDelete = async () => {
+    const confirm = await Swal.fire({
+      title: "คุณแน่ใจหรือไม่?",
+      text: `คุณต้องการลบโปรเจกต์ "${project.name}" หรือไม่?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "ลบ",
+      cancelButtonText: "ยกเลิก",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(`http://localhost:3000/project/${project.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "ลบโปรเจกต์สำเร็จ",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          customClass: {
+            title: "swal-font",
+            popup: "swal-toast",
+          },
+        });
+
+        if (onDelete) onDelete(); // รีเฟรชข้อมูล
+      } catch (error) {
+        console.error("Error deleting project:", error);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถลบโปรเจกต์ได้ กรุณาลองใหม่",
+        });
+      }
+    }
+
+    handleMenuClose();
   };
 
   return (
@@ -105,7 +155,7 @@ const ProjectCard = ({ project }) => {
             </ListItemIcon>
             แก้ไข
           </MenuItem>
-          <MenuItem sx={{ fontSize: "0.875rem" }}>
+          <MenuItem onClick={handleDelete} sx={{ fontSize: "0.875rem" }}>
             <ListItemIcon>
               <Delete sx={{ color: "#e53935" }} fontSize="small" />
             </ListItemIcon>
@@ -194,15 +244,10 @@ export default function ProjectPage() {
         </Box>
 
         {/* Project Grid */}
-        <Grid
-          container
-          columns={12}
-          spacing={3}
-          sx={{ justifyContent: "center" }}
-        >
+        <Grid container columns={12} spacing={3}>
           {projectData.map((project, idx) => (
             <Grid key={idx} size={{ sm: 6, md: 3 }} sx={{ display: "flex" }}>
-              <ProjectCard project={project} />
+              <ProjectCard project={project} onDelete={getData} />
             </Grid>
           ))}
         </Grid>
@@ -210,6 +255,7 @@ export default function ProjectPage() {
       <CreateProjectForm
         open={openRegister}
         onClose={() => setOpenRegister(false)}
+        onSuccess={getData}
       />
     </>
   );

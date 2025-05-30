@@ -24,7 +24,7 @@ import {
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const CreateProjectForm = ({ open, onClose }) => {
+const CreateProjectForm = ({ open, onClose, onSuccess }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
@@ -34,30 +34,27 @@ const CreateProjectForm = ({ open, onClose }) => {
     const payload = { name, description, status };
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
-        "http://localhost:3000/project",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.message === "ok") {
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "สมัครสมาชิกสำเร็จ",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          customClass: {
-            title: "swal-font",
-            popup: "swal-toast",
-          },
-        });
-      }
+      await axios.post("http://localhost:3000/project", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "สร้างโปรเจกต์สำเร็จ",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        customClass: {
+          title: "swal-font",
+          popup: "swal-toast",
+        },
+      });
+
+      if (onSuccess) onSuccess();
 
       onClose();
 
@@ -195,7 +192,7 @@ const CreateProjectForm = ({ open, onClose }) => {
               }
             >
               <MenuItem value="" disabled>
-                เลือกสถานะ
+                สถานะของโปรเจกต์
               </MenuItem>
               <MenuItem value="Started">Started</MenuItem>
               <MenuItem value="OnGoing">OnGoing</MenuItem>
